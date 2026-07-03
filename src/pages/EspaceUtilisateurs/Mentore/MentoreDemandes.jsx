@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-import api from "../../../api/axiosConfig";
+import { Link } from "react-router-dom";
+import RelationService from "../../../services/RelationService";
+import PageHeader from "../../../components/PageHeader";
+import DataTable from "../../../components/DataTable";
+import StatusBadge from "../../../components/StatusBadge";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import handleApiError from "../../../utils/handleApiError";
 
 function MentoreDemandes() {
   const user = JSON.parse(localStorage.getItem("user"));
   const [relations, setRelations] = useState([]);
+  const [message, setMessage] = useState("");
+  const [confirmRelation, setConfirmRelation] = useState(null);
 
   useEffect(() => {
     loadDemandes();
@@ -11,80 +19,94 @@ function MentoreDemandes() {
 
   const loadDemandes = async () => {
     try {
-      const res = await api.get(`/relations/mentore/${user.id}`);
+      const res = await RelationService.getRelationsByMentore(user.id);
       setRelations(res.data);
     } catch (error) {
-      console.error(error);
+      setMessage(handleApiError(error));
     }
   };
 
-  const getBadgeClass = (statut) => {
-    if (statut === "EN_ATTENTE") return "badge bg-warning text-dark";
-    if (statut === "ACCEPTE" || statut === "ACCEPTEE") return "badge bg-success";
-    if (statut === "REFUSEE") return "badge bg-danger";
-    return "badge bg-secondary";
+  const confirmDelete = async () => {
+    try {
+      await RelationService.deleteRelation(confirmRelation.id);
+      loadDemandes();
+    } catch (error) {
+      setMessage(handleApiError(error));
+    } finally {
+      setConfirmRelation(null);
+    }
   };
+
+  const isAcceptee = (statut) => statut === "ACCEPTEE";
+
+  const columns = [
+    {
+      header: "Mentor",
+      render: (r) => `${r.mentor?.prenom || ""} ${r.mentor?.nom || ""}`,
+    },
+    { header: "Email", render: (r) => r.mentor?.email || "Non renseigne" },
+    { header: "Date demande", render: (r) => r.dateDemande || "-" },
+    {
+      header: "Date reponse",
+      render: (r) => r.dateReponse || "Pas encore repondu",
+    },
+    { header: "Statut", render: (r) => <StatusBadge statut={r.statut} /> },
+    {
+      header: "Discussion",
+      render: (r) =>
+        isAcceptee(r.statut) ? (
+          <Link className="btn btn-primary btn-sm" to={`/conversation/${r.id}`}>
+            Discussion
+          </Link>
+        ) : (
+          "-"
+        ),
+    },
+    {
+      header: "Actions",
+      render: (r) => (
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={() => setConfirmRelation(r)}
+        >
+          Supprimer
+        </button>
+      ),
+    },
+  ];
+
+  const messageConfirmation = isAcceptee(confirmRelation?.statut)
+    ? "Cette demande est acceptee. La supprimer effacera aussi les rendez-vous et evaluations associes. Continuer ?"
+    : "Voulez-vous vraiment supprimer cette demande ?";
 
   return (
     <div className="container mt-5">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h2>Mes demandes envoyées</h2>
-          <p className="text-muted">Suivez le statut de vos demandes.</p>
-        </div>
+      <PageHeader
+        title="Mes demandes envoyees"
+        subtitle="Suivez le statut de vos demandes."
+        actions={
+          <Link to="/mentore" className="btn btn-outline-secondary">
+            Retour
+          </Link>
+        }
+      />
 
-        <a href="/mentore" className="btn btn-outline-secondary">
-          Retour
-        </a>
-      </div>
+      {message && <div className="alert alert-info">{message}</div>}
 
-      {relations.length === 0 ? (
-        <div className="alert alert-info">
-          Vous n'avez encore envoyé aucune demande.
-        </div>
-      ) : (
-        <table className="table table-bordered table-hover align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>Mentor</th>
-              <th>Email</th>
-              <th>Date demande</th>
-              <th>Date réponse</th>
-              <th>Statut</th>
-              <th>Discussion</th>
-            </tr>
-          </thead>
+      <DataTable
+        columns={columns}
+        data={relations}
+        emptyMessage="Vous n'avez encore envoye aucune demande."
+      />
 
-          <tbody>
-            {relations.map((relation) => (
-              <tr key={relation.id}>
-                <td>
-                  {relation.mentor?.prenom} {relation.mentor?.nom}
-                </td>
-                <td>{relation.mentor?.email || "Non renseigné"}</td>
-                <td>{relation.dateDemande || "-"}</td>
-                <td>{relation.dateReponse || "Pas encore répondu"}</td>
-                <td>
-                  <span className={getBadgeClass(relation.statut)}>
-                    {relation.statut}
-                  </span>
-                </td>
-                <td>
-                  {(relation.statut === "ACCEPTE" ||
-                    relation.statut === "ACCEPTEE") && (
-                    <a
-                      className="btn btn-primary btn-sm"
-                      href={`/conversation/${relation.id}`}
-                    >
-                      Discussion
-                    </a>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <ConfirmDialog
+        show={confirmRelation !== null}
+        title="Supprimer la demande"
+        message={messageConfirmation}
+        confirmLabel="Supprimer"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmRelation(null)}
+      />
     </div>
   );
 }

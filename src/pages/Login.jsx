@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axiosConfig";
+import AuthService from "../services/AuthService";
 
-function Login() {
+function Login({ setUser }) {
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
   const [message, setMessage] = useState("");
@@ -12,28 +12,32 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await api.post(
-        `/auth/login?email=${encodeURIComponent(email)}&motDePasse=${encodeURIComponent(motDePasse)}`
-      );
+      const res = await AuthService.login(email, motDePasse);
 
-      console.log("LOGIN RESPONSE:", res.data);
+      const { token, utilisateur } = res.data || {};
 
-      if (res.data && res.data.id) {
-        localStorage.setItem("user", JSON.stringify(res.data));
+      if (token && utilisateur) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(utilisateur));
 
-        if (res.data.role === "ADMIN") {
+        setUser(utilisateur);
+
+        if (utilisateur.role === "ADMIN") {
           navigate("/dashboard", { replace: true });
-        } else if (res.data.role === "MENTOR") {
+        } else if (utilisateur.role === "MENTOR") {
           navigate("/mentor", { replace: true });
-        } else if (res.data.role === "MENTORE") {
+        } else if (utilisateur.role === "MENTORE") {
           navigate("/mentore", { replace: true });
         }
       } else {
         setMessage("Email ou mot de passe incorrect");
       }
     } catch (error) {
-      console.error(error);
-      setMessage("Erreur lors de la connexion");
+      if (error?.response?.status === 401) {
+        setMessage("Email ou mot de passe incorrect");
+      } else {
+        setMessage("Erreur lors de la connexion");
+      }
     }
   };
 

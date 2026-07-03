@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import api from "../api/axiosConfig";
+import { useParams, Link } from "react-router-dom";
+import RelationService from "../services/RelationService";
+import MessageService from "../services/MessageService";
 
 function Conversation() {
   const { relationId } = useParams();
@@ -33,7 +34,7 @@ function Conversation() {
 
   const loadRelation = async () => {
     try {
-      const res = await api.get(`/relations/${relationId}`);
+      const res = await RelationService.getRelationById(relationId);
       setRelation(res.data);
     } catch (error) {
       console.error(error);
@@ -42,7 +43,7 @@ function Conversation() {
 
   const loadMessages = async () => {
     try {
-      const res = await api.get(`/messages/relation/${relationId}`);
+      const res = await MessageService.getMessagesByRelation(relationId);
       setMessages(res.data);
     } catch (error) {
       console.error(error);
@@ -66,11 +67,11 @@ function Conversation() {
     }
 
     try {
-      await api.post(
-        `/messages?relationId=${relationId}&expediteurId=${user.id}&destinataireId=${destinataireId}`,
-        {
-          message: texte,
-        }
+      await MessageService.envoyerMessage(
+        relationId,
+        user.id,
+        destinataireId,
+        texte
       );
 
       setTexte("");
@@ -103,12 +104,12 @@ function Conversation() {
         </p>
       )}
       {relation && (
-        <a
-            href={`/rendez-vous/create/${relation.id}`}
+        <Link
+            to={`/rendez-vous/create/${relation.id}`}
             className="btn btn-outline-success mb-3"
         >
             Planifier un rendez-vous
-        </a>
+        </Link>
         )}
         
       <div

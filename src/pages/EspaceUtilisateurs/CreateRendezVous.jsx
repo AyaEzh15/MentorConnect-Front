@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../api/axiosConfig";
+import RendezVousService from "../../services/RendezVousService";
+import PageHeader from "../../components/PageHeader";
+import handleApiError from "../../utils/handleApiError";
 
 function CreateRendezVous() {
   const { relationId } = useParams();
@@ -25,17 +27,20 @@ function CreateRendezVous() {
     e.preventDefault();
 
     try {
-      await api.post(`/rendez-vous?relationId=${relationId}`, form);
-      setMessage("Rendez-vous créé avec succès");
+      const payload = {
+        ...form,
+        duree: form.duree ? Number(form.duree) : null,
+      };
+      await RendezVousService.createRendezVous(relationId, payload);
+      setMessage("Rendez-vous cree avec succes");
     } catch (error) {
-      console.error(error);
-      setMessage("Erreur lors de la création du rendez-vous");
+      setMessage(handleApiError(error, "Erreur lors de la creation du rendez-vous"));
     }
   };
 
   return (
     <div className="container mt-5" style={{ maxWidth: "600px" }}>
-      <h2>Planifier un rendez-vous</h2>
+      <PageHeader title="Planifier un rendez-vous" />
 
       {message && <div className="alert alert-info">{message}</div>}
 
@@ -59,11 +64,13 @@ function CreateRendezVous() {
           onChange={handleChange}
         />
 
-        <label className="form-label">Durée</label>
+        <label className="form-label">Durée (en minutes)</label>
         <input
+          type="number"
+          min="1"
           name="duree"
           className="form-control mb-3"
-          placeholder="Ex: 60 minutes"
+          placeholder="Ex: 60"
           value={form.duree}
           onChange={handleChange}
         />

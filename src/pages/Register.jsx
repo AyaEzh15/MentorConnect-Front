@@ -1,5 +1,6 @@
 import { useState } from "react";
-import api from "../api/axiosConfig";
+import AuthService from "../services/AuthService";
+
 
 function Register() {
   const [form, setForm] = useState({
@@ -20,15 +21,27 @@ function Register() {
     e.preventDefault();
 
     try {
-      const res = await api.post("/auth/register", form);
+      const res = await AuthService.register(form);
 
-      if (res.data) {
+      const { token, utilisateur } = res.data || {};
+
+      if (token && utilisateur) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(utilisateur));
+
         setMessage("Compte créé avec succès");
+
+        const target = utilisateur.role === "MENTOR" ? "/mentor" : "/mentore";
+        window.location.href = target;
       } else {
-        setMessage("Email déjà utilisé");
+        setMessage("Erreur lors de l'inscription");
       }
     } catch (error) {
-      setMessage("Erreur lors de l'inscription");
+      if (error?.response?.status === 409) {
+        setMessage("Email déjà utilisé");
+      } else {
+        setMessage("Erreur lors de l'inscription");
+      }
     }
   };
 

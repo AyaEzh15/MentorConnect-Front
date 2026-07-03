@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import api from "../api/axiosConfig";
+import NotificationService from "../services/NotificationService";
+import PageHeader from "../components/PageHeader";
+import handleApiError from "../utils/handleApiError";
 
 function Notifications() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
     const [notifications, setNotifications] = useState([]);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         loadNotifications();
@@ -13,14 +16,14 @@ function Notifications() {
 
     const loadNotifications = async () => {
         try {
-            const res = await api.get(
-                `/notifications/utilisateur/${user.id}`
+            const res = await NotificationService.getNotificationsByUtilisateur(
+                user.id
             );
 
             setNotifications(res.data);
 
         } catch (error) {
-            console.error(error);
+            setMessage(handleApiError(error));
         }
     };
 
@@ -28,7 +31,7 @@ function Notifications() {
 
         try {
 
-            await api.patch(`/notifications/${id}/lu`);
+            await NotificationService.marquerCommeLue(id);
 
             loadNotifications();
 
@@ -41,7 +44,7 @@ function Notifications() {
 
         try {
 
-            await api.delete(`/notifications/${id}`);
+            await NotificationService.deleteNotification(id);
 
             loadNotifications();
 
@@ -53,7 +56,9 @@ function Notifications() {
     return (
         <div className="container mt-5">
 
-            <h2>Mes Notifications</h2>
+            <PageHeader title="Mes Notifications" />
+
+            {message && <div className="alert alert-danger">{message}</div>}
 
             {
                 notifications.length === 0 ?
