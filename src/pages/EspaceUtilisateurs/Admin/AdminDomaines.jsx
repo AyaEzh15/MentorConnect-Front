@@ -111,7 +111,7 @@ function AdminDomaines() {
   ];
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader title="Gestion des domaines" />
 
       {message && <div className="alert alert-info">{message}</div>}

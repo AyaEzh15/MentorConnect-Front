@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import Navbar from "./components/Navbar";
 
+import Accueil from "./pages/Accueil";
+import Mentors from "./pages/Mentors";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -13,6 +15,7 @@ import AdminEvaluations from "./pages/EspaceUtilisateurs/Admin/AdminEvaluations"
 
 import MentoreHome from "./pages/EspaceUtilisateurs/Mentore/MentoreHome";
 import MentoreDemandes from "./pages/EspaceUtilisateurs/Mentore/MentoreDemandes";
+import MentoreCherche from "./pages/EspaceUtilisateurs/Mentore/MentoreCherche";
 import MentorHome from "./pages/EspaceUtilisateurs/Mentor/MentorHome";
 
 import Notifications from "./pages/Notifications";
@@ -43,11 +46,30 @@ function getCurrentUser() {
 function App() {
   const [user, setUser] = useState(getCurrentUser());
 
+  const updateUser = useCallback((next) => {
+    setUser((prev) => {
+      const value = typeof next === "function" ? next(prev) : next;
+      if (
+        prev &&
+        value &&
+        prev.id === value.id &&
+        prev.photoProfil === value.photoProfil &&
+        prev.prenom === value.prenom &&
+        prev.nom === value.nom &&
+        prev.email === value.email &&
+        prev.role === value.role
+      ) {
+        return prev;
+      }
+      return value;
+    });
+  }, []);
+
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   const AdminRoute = ({ children }) => {
@@ -75,9 +97,10 @@ function App() {
       <Navbar user={user} logout={logout} />
 
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Accueil />} />
+        <Route path="/mentors" element={<Mentors />} />
 
-        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/login" element={<Login setUser={updateUser} />} />
         <Route path="/register" element={<Register />} />
 
         <Route
@@ -130,6 +153,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MentoreHome />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mentore/cherche"
+          element={
+            <ProtectedRoute>
+              <MentoreCherche />
             </ProtectedRoute>
           }
         />
@@ -201,12 +233,12 @@ function App() {
           path="/mon-profil"
           element={
             <ProtectedRoute>
-              <MonProfil />
+              <MonProfil setUser={updateUser} />
             </ProtectedRoute>
           }
         />
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8082/api",
+  baseURL: "http://172.17.163.67:8082/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -16,10 +16,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      const publicPaths = ["/", "/mentors", "/login", "/register"];
+      const path = window.location.pathname;
+
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      if (window.location.pathname !== "/login") {
+      if (!publicPaths.includes(path)) {
         window.location.href = "/login";
       }
     }

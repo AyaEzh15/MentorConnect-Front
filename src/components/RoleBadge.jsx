@@ -1,16 +1,16 @@
 const ROLE_CONFIG = {
-  ADMIN: { label: "Admin", className: "bg-dark" },
-  MENTOR: { label: "Mentor", className: "bg-info text-dark" },
-  MENTORE: { label: "Mentore", className: "bg-primary" },
+  ADMIN: { label: "Admin", className: "mc-badge mc-badge--muted" },
+  MENTOR: { label: "Mentor", className: "mc-badge mc-badge--primary" },
+  MENTORE: { label: "Mentoré", className: "mc-badge mc-badge--success" },
 };
 
 function RoleBadge({ role }) {
   const config = ROLE_CONFIG[role] || {
     label: role || "-",
-    className: "bg-secondary",
+    className: "mc-badge mc-badge--muted",
   };
 
-  return <span className={`badge ${config.className}`}>{config.label}</span>;
+  return <span className={config.className}>{config.label}</span>;
 }
 
 export default RoleBadge;

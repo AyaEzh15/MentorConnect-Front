@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RendezVousService from "../../services/RendezVousService";
 import EvaluationService from "../../services/EvaluationService";
 import PageHeader from "../../components/PageHeader";
@@ -7,14 +7,37 @@ import StatusBadge from "../../components/StatusBadge";
 import StarRating from "../../components/StarRating";
 import handleApiError from "../../utils/handleApiError";
 import { getEvaluationConfig } from "../../utils/evaluationConfig";
+import {
+  canJoinMeeting,
+  getEffectiveStatut,
+  isHttpUrl,
+  resolveMeetingUrl,
+} from "../../utils/rendezVousJoin";
+
+function formatRdvDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+
+  return date.toLocaleString("fr-FR", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function MesRendezVous() {
   const user = JSON.parse(localStorage.getItem("user"));
   const evalConfig = getEvaluationConfig(user.role);
+  const isMentor = user?.role === "MENTOR";
 
   const [rendezVous, setRendezVous] = useState([]);
   const [evaluationsEnvoyees, setEvaluationsEnvoyees] = useState([]);
   const [message, setMessage] = useState("");
+  const [now, setNow] = useState(() => new Date());
 
   const [evalRdv, setEvalRdv] = useState(null);
   const [note, setNote] = useState(5);
@@ -23,6 +46,27 @@ function MesRendezVous() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Met à jour le statut / les actions sans recharger la page
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Quand la durée est écoulée, resynchronise avec l'API (clôture auto côté serveur)
+  useEffect(() => {
+    const aCloturer = rendezVous.some(
+      (rdv) =>
+        (rdv.statut === "PLANIFIE" || rdv.statut === "CONFIRME") &&
+        getEffectiveStatut(rdv, now) === "TERMINE"
+    );
+    if (!aCloturer) return undefined;
+
+    const sync = setTimeout(() => {
+      loadData();
+    }, 800);
+    return () => clearTimeout(sync);
+  }, [now, rendezVous]);
 
   const loadData = async () => {
     try {
@@ -89,15 +133,19 @@ function MesRendezVous() {
         : null;
 
     if (user.role === "MENTORE") {
-      return mentor ? `${mentor.prenom} ${mentor.nom}` : "votre mentor";
+      const nom = `${mentor?.prenom || ""} ${mentor?.nom || ""}`.trim();
+      return nom || "Mentor inconnu";
     }
 
     if (user.role === "MENTOR") {
-      return mentore ? `${mentore.prenom} ${mentore.nom}` : "votre mentore";
+      const nom = `${mentore?.prenom || ""} ${mentore?.nom || ""}`.trim();
+      return nom || "Mentoré inconnu";
     }
 
-    return "l'interlocuteur";
+    return "Interlocuteur";
   };
+
+  const interlocuteurHeader = isMentor ? "Mentoré" : "Mentor";
 
   const dejaEvalue = (rdvId) =>
     evaluationsEnvoyees.some((evaluation) => evaluation.rendezVousId === rdvId);
@@ -135,64 +183,112 @@ function MesRendezVous() {
     }
   };
 
-  const columns = [
-    { header: "Date", render: (rdv) => rdv.dateHeure },
-    { header: "Lieu / lien", render: (rdv) => rdv.lieuReunion || "-" },
-    { header: "Notes", render: (rdv) => rdv.notes || "-" },
-    { header: "Statut", render: (rdv) => <StatusBadge statut={rdv.statut} /> },
-    {
-      header: "Actions",
-      render: (rdv) => (
-        <>
-          {rdv.statut === "PLANIFIE" && (
-            <button
-              className="btn btn-primary btn-sm me-2"
-              onClick={() => confirmer(rdv.id)}
-            >
-              Confirmer
-            </button>
-          )}
+  const columns = useMemo(
+    () => [
+      { header: "Date", render: (rdv) => formatRdvDate(rdv.dateHeure) },
+      {
+        header: interlocuteurHeader,
+        render: (rdv) => getInterlocuteur(rdv),
+      },
+      {
+        header: "Durée",
+        render: (rdv) => (rdv.duree ? `${rdv.duree} min` : "-"),
+      },
+      { header: "Lieu / lien", render: (rdv) => rdv.lieuReunion || "-" },
+      { header: "Notes", render: (rdv) => rdv.notes || "-" },
+      {
+        header: "Statut",
+        render: (rdv) => <StatusBadge statut={getEffectiveStatut(rdv, now)} />,
+      },
+      {
+        header: "Actions",
+        render: (rdv) => {
+          const statut = getEffectiveStatut(rdv, now);
+          const canJoin = canJoinMeeting(rdv, now);
+          const nom = getInterlocuteur(rdv);
 
-          {(rdv.statut === "PLANIFIE" || rdv.statut === "CONFIRME") && (
-            <button
-              className="btn btn-danger btn-sm me-2"
-              onClick={() => annuler(rdv.id)}
-            >
-              Annuler
-            </button>
-          )}
+          if (statut === "ANNULE") {
+            return <span className="text-muted">-</span>;
+          }
 
-          {rdv.statut === "CONFIRME" && (
-            <button
-              className="btn btn-success btn-sm"
-              onClick={() => terminer(rdv.id)}
-            >
-              Terminer
-            </button>
-          )}
+          // Après la fin (auto ou manuelle) : uniquement évaluation
+          if (statut === "TERMINE") {
+            if (dejaEvalue(rdv.id)) {
+              return (
+                <span className="badge bg-success">
+                  {isMentor ? `Mentoré évalué : ${nom}` : `Mentor évalué : ${nom}`}
+                </span>
+              );
+            }
+            return (
+              <button
+                className={`btn btn-sm ${evalConfig.buttonClass}`}
+                onClick={() => ouvrirEvaluation(rdv)}
+              >
+                {isMentor ? `Évaluer ${nom}` : `Évaluer ${nom}`}
+              </button>
+            );
+          }
 
-          {rdv.statut === "TERMINE" && !dejaEvalue(rdv.id) && (
-            <button
-              className={`btn btn-sm ${evalConfig.buttonClass}`}
-              onClick={() => ouvrirEvaluation(rdv)}
-            >
-              {user.role === "MENTORE" ? "Evaluer le mentor" : "Evaluer le mentore"}
-            </button>
-          )}
+          return (
+            <>
+              {isHttpUrl(rdv.lieuReunion) && canJoin && (
+                <a
+                  className="btn btn-outline-primary btn-sm me-2"
+                  href={resolveMeetingUrl(rdv.lieuReunion)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Rejoindre
+                </a>
+              )}
 
-          {rdv.statut === "TERMINE" && dejaEvalue(rdv.id) && (
-            <span className="badge bg-success">Evalue</span>
-          )}
+              {statut === "PLANIFIE" && (
+                <button
+                  className="btn btn-primary btn-sm me-2"
+                  onClick={() => confirmer(rdv.id)}
+                >
+                  Confirmer
+                </button>
+              )}
 
-          {rdv.statut === "ANNULE" && <span className="text-muted">-</span>}
-        </>
-      ),
-    },
-  ];
+              {/* Annuler + Terminer : mentor uniquement */}
+              {isMentor && (statut === "PLANIFIE" || statut === "CONFIRME") && (
+                <button
+                  className="btn btn-danger btn-sm me-2"
+                  onClick={() => annuler(rdv.id)}
+                >
+                  Annuler
+                </button>
+              )}
+
+              {isMentor &&
+                (statut === "PLANIFIE" || statut === "CONFIRME") && (
+                  <button
+                    className="btn btn-success btn-sm me-2"
+                    onClick={() => terminer(rdv.id)}
+                  >
+                    Terminer
+                  </button>
+                )}
+            </>
+          );
+        },
+      },
+    ],
+    [now, evaluationsEnvoyees, evalConfig, isMentor, user.role, interlocuteurHeader]
+  );
 
   return (
-    <div className="container mt-5">
-      <PageHeader title="Mes rendez-vous" />
+    <div className="mc-page">
+      <PageHeader
+        title="Mes rendez-vous"
+        subtitle={
+          isMentor
+            ? "Vous pouvez annuler ou terminer une session. Sinon elle se clôture automatiquement à la fin de la durée."
+            : "Seul le mentor peut annuler un rendez-vous. À la fin de la durée, la session se termine automatiquement."
+        }
+      />
 
       {message && <div className="alert alert-info">{message}</div>}
 
@@ -218,9 +314,13 @@ function MesRendezVous() {
               <div className="modal-content">
                 <div className="modal-header">
                   <div>
-                    <h5 className="modal-title">{evalConfig.title}</h5>
+                    <h5 className="modal-title">
+                      {isMentor
+                        ? `Évaluer le mentoré : ${getInterlocuteur(evalRdv)}`
+                        : `Évaluer le mentor : ${getInterlocuteur(evalRdv)}`}
+                    </h5>
                     <small className="text-muted">
-                      {getInterlocuteur(evalRdv)} — {evalRdv.dateHeure}
+                      Session du {formatRdvDate(evalRdv.dateHeure)}
                     </small>
                   </div>
                   <button

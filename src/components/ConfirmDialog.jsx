@@ -32,19 +32,21 @@ function ConfirmDialog({
                 type="button"
                 className="btn-close"
                 onClick={onCancel}
-              ></button>
+                aria-label="Fermer"
+              />
             </div>
 
             <div className="modal-body">
-              <p className="mb-0">{message}</p>
+              <p className="mb-0 text-muted">{message}</p>
             </div>
 
             <div className="modal-footer">
-              <button className="btn btn-secondary" onClick={onCancel}>
+              <button className="btn btn-secondary" type="button" onClick={onCancel}>
                 {cancelLabel}
               </button>
               <button
                 className={`btn btn-${confirmVariant}`}
+                type="button"
                 onClick={onConfirm}
               >
                 {confirmLabel}
@@ -54,7 +56,7 @@ function ConfirmDialog({
         </div>
       </div>
 
-      <div className="modal-backdrop fade show"></div>
+      <div className="modal-backdrop fade show" />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../services/AuthService";
 
 function Login({ setUser }) {
@@ -13,13 +13,11 @@ function Login({ setUser }) {
 
     try {
       const res = await AuthService.login(email, motDePasse);
-
       const { token, utilisateur } = res.data || {};
 
       if (token && utilisateur) {
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(utilisateur));
-
         setUser(utilisateur);
 
         if (utilisateur.role === "ADMIN") {
@@ -42,34 +40,52 @@ function Login({ setUser }) {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "500px" }}>
-      <h2 className="mb-4 text-center">Connexion</h2>
+    <div className="mc-auth">
+      <div className="mc-auth__card">
+        <h1 className="mc-auth__title">Connexion</h1>
+        <p className="mc-auth__subtitle">
+          Accédez à votre espace MentorConnect
+        </p>
 
-      <form onSubmit={handleLogin}>
-        <input
-          className="form-control mb-3"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleLogin}>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input
+              className="form-control"
+              type="email"
+              placeholder="vous@exemple.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <input
-          className="form-control mb-3"
-          type="password"
-          placeholder="Mot de passe"
-          value={motDePasse}
-          onChange={(e) => setMotDePasse(e.target.value)}
-          required
-        />
+          <div className="mb-3">
+            <label className="form-label">Mot de passe</label>
+            <input
+              className="form-control"
+              type="password"
+              placeholder="••••••••"
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" className="btn btn-primary w-100">
-          Se connecter
-        </button>
-      </form>
+          <button type="submit" className="btn btn-primary w-100">
+            Se connecter
+          </button>
+        </form>
 
-      {message && <p className="mt-3 text-danger text-center">{message}</p>}
+        {message && (
+          <div className="alert alert-danger mt-3 mb-0">{message}</div>
+        )}
+
+        <p className="text-center text-muted mt-3 mb-0" style={{ fontSize: 14 }}>
+          Pas encore de compte ?{" "}
+          <Link to="/register">Créer un compte</Link>
+        </p>
+      </div>
     </div>
   );
 }

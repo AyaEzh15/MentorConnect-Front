@@ -80,7 +80,7 @@ function MentoreDemandes() {
     : "Voulez-vous vraiment supprimer cette demande ?";
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader
         title="Mes demandes envoyees"
         subtitle="Suivez le statut de vos demandes."

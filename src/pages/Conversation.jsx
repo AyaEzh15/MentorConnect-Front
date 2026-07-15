@@ -1,7 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Client } from "@stomp/stompjs";
 import RelationService from "../services/RelationService";
 import MessageService from "../services/MessageService";
+import PageHeader from "../components/PageHeader";
+import { WS_URL } from "../utils/mediaUrl";
+
+const DAYS_FR = [
+  "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+];
+
+function parseMessageDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function startOfDay(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function formatMessageTime(date) {
+  return date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatDateSeparator(date, now = new Date()) {
+  const today = startOfDay(now);
+  const messageDay = startOfDay(date);
+  const diffDays = Math.round(
+    (today.getTime() - messageDay.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays === 0) return "Aujourd'hui";
+  if (diffDays === 1) return "Hier";
+
+  if (diffDays > 1 && diffDays < 7) {
+    return DAYS_FR[date.getDay()];
+  }
+
+  return date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
 
 function Conversation() {
   const { relationId } = useParams();
@@ -10,6 +63,7 @@ function Conversation() {
   const [messages, setMessages] = useState([]);
   const [relation, setRelation] = useState(null);
   const [texte, setTexte] = useState("");
+  const [wsStatus, setWsStatus] = useState("connexion…");
 
   const messagesEndRef = useRef(null);
 
@@ -17,11 +71,41 @@ function Conversation() {
     loadRelation();
     loadMessages();
 
-    const interval = setInterval(() => {
-      loadMessages();
-    }, 2000);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setWsStatus("hors ligne");
+      return undefined;
+    }
 
-    return () => clearInterval(interval);
+    const client = new Client({
+      brokerURL: `${WS_URL}?token=${encodeURIComponent(token)}`,
+      reconnectDelay: 4000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
+      onConnect: () => {
+        setWsStatus("en direct");
+        client.subscribe(`/topic/relations/${relationId}`, (frame) => {
+          try {
+            const incoming = JSON.parse(frame.body);
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === incoming.id)) return prev;
+              return [...prev, incoming];
+            });
+          } catch (error) {
+            console.error(error);
+          }
+        });
+      },
+      onStompError: () => setWsStatus("erreur"),
+      onWebSocketClose: () => setWsStatus("reconnection…"),
+      onDisconnect: () => setWsStatus("hors ligne"),
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
   }, [relationId]);
 
   useEffect(() => {
@@ -44,7 +128,7 @@ function Conversation() {
   const loadMessages = async () => {
     try {
       const res = await MessageService.getMessagesByRelation(relationId);
-      setMessages(res.data);
+      setMessages(res.data || []);
     } catch (error) {
       console.error(error);
     }
@@ -58,109 +142,154 @@ function Conversation() {
   const envoyerMessage = async () => {
     if (!texte.trim() || !relation) return;
 
-    let destinataireId;
+    const destinataireId =
+      user.id === relation.mentor.id
+        ? relation.mentore.id
+        : relation.mentor.id;
 
-    if (user.id === relation.mentor.id) {
-      destinataireId = relation.mentore.id;
-    } else {
-      destinataireId = relation.mentor.id;
-    }
+    const contenu = texte;
+    setTexte("");
 
     try {
       await MessageService.envoyerMessage(
         relationId,
         user.id,
         destinataireId,
-        texte
+        contenu
       );
-
-      setTexte("");
-      loadMessages();
+      // Diffusion via WebSocket : pas de reload polling
     } catch (error) {
       console.error(error);
+      setTexte(contenu);
     }
   };
 
-  const retour = () => {
-    if (user.role === "MENTOR") {
-      window.location.href = "/mentor";
-    } else {
-      window.location.href = "/mentore/demandes";
-    }
-  };
+  const items = useMemo(() => {
+    const now = new Date();
+    const result = [];
+    let lastDayKey = null;
+
+    messages.forEach((msg) => {
+      const date = parseMessageDate(msg.dateEnvoi);
+      const dayKey = date
+        ? `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+        : null;
+
+      if (date && dayKey !== lastDayKey) {
+        result.push({
+          type: "separator",
+          key: `day-${dayKey}`,
+          label: formatDateSeparator(date, now),
+        });
+        lastDayKey = dayKey;
+      }
+
+      result.push({
+        type: "message",
+        key: `msg-${msg.id}`,
+        message: msg,
+        date,
+      });
+    });
+
+    return result;
+  }, [messages]);
+
+  const retourPath = user.role === "MENTOR" ? "/mentor" : "/mentore/demandes";
+
+  const interlocuteur =
+    user?.role === "MENTOR"
+      ? `${relation?.mentore?.prenom || ""} ${relation?.mentore?.nom || ""}`
+      : `${relation?.mentor?.prenom || ""} ${relation?.mentor?.nom || ""}`;
 
   return (
-    <div className="container mt-4">
-      <button className="btn btn-outline-secondary mb-3" onClick={retour}>
-        Retour
-      </button>
-
-      <h2>Conversation</h2>
-
-      {relation && (
-        <p className="text-muted">
-          Mentor : {relation.mentor?.prenom} {relation.mentor?.nom} | Mentoré :{" "}
-          {relation.mentore?.prenom} {relation.mentore?.nom}
-        </p>
-      )}
-      {relation && (
-        <Link
-            to={`/rendez-vous/create/${relation.id}`}
-            className="btn btn-outline-success mb-3"
-        >
-            Planifier un rendez-vous
-        </Link>
-        )}
-        
-      <div
-        className="border rounded p-3 mb-3 bg-white"
-        style={{ height: "500px", overflowY: "auto" }}
-      >
-        {messages.length === 0 ? (
-          <p className="text-muted">Aucun message pour le moment.</p>
-        ) : (
-          messages.map((msg) => {
-            const isMe = getExpediteurId(msg) === user.id;
-
-            return (
-              <div
-                key={msg.id}
-                className={`mb-3 ${isMe ? "text-end" : "text-start"}`}
+    <div className="mc-page">
+      <PageHeader
+        title="Conversation"
+        subtitle={
+          relation
+            ? `Échange avec ${interlocuteur.trim()} · ${wsStatus}`
+            : "Chargement…"
+        }
+        actions={
+          <>
+            <Link to={retourPath} className="btn btn-outline-secondary">
+              Retour
+            </Link>
+            {relation && (
+              <Link
+                to={`/rendez-vous/create/${relation.id}`}
+                className="btn btn-outline-primary"
               >
+                Planifier un RDV
+              </Link>
+            )}
+          </>
+        }
+      />
+
+      <div className="mc-chat">
+        <div className="mc-chat__window">
+          {messages.length === 0 ? (
+            <p className="text-muted mb-0">Aucun message pour le moment.</p>
+          ) : (
+            items.map((item) => {
+              if (item.type === "separator") {
+                return (
+                  <div key={item.key} className="mc-chat__day">
+                    <span>{item.label}</span>
+                  </div>
+                );
+              }
+
+              const { message: msg, date } = item;
+              const isMe = getExpediteurId(msg) === user.id;
+
+              return (
                 <div
-                  className={`d-inline-block p-2 rounded ${
-                    isMe ? "bg-primary text-white" : "bg-light border"
+                  key={item.key}
+                  className={`mc-chat__row ${
+                    isMe ? "mc-chat__row--mine" : "mc-chat__row--theirs"
                   }`}
                 >
-                  {msg.message}
+                  <div
+                    className={`mc-chat__bubble ${
+                      isMe ? "mc-chat__bubble--mine" : "mc-chat__bubble--theirs"
+                    }`}
+                  >
+                    <span className="mc-chat__text">{msg.message}</span>
+                    {date && (
+                      <span className="mc-chat__time">
+                        {formatMessageTime(date)}
+                      </span>
+                    )}
+                  </div>
                 </div>
+              );
+            })
+          )}
+          <div ref={messagesEndRef} />
+        </div>
 
-                <div>
-                  <small className="text-muted">{msg.dateEnvoi}</small>
-                </div>
-              </div>
-            );
-          })
-        )}
-
-        <div ref={messagesEndRef}></div>
-      </div>
-
-      <div className="input-group">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Écrire un message..."
-          value={texte}
-          onChange={(e) => setTexte(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") envoyerMessage();
-          }}
-        />
-
-        <button className="btn btn-success" onClick={envoyerMessage}>
-          Envoyer
-        </button>
+        <div className="mc-chat__composer">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Écrire un message…"
+            value={texte}
+            onChange={(e) => setTexte(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") envoyerMessage();
+            }}
+          />
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={envoyerMessage}
+          >
+            Envoyer
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,187 @@
+.mentor-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.mentor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(0, 40, 142, 0.1);
+}
+
+.mentor-card__banner {
+  height: 128px;
+  position: relative;
+}
+
+.mentor-card__banner--primary {
+  background: linear-gradient(to right, #00288e, #3755c3);
+}
+
+.mentor-card__banner--secondary {
+  background: linear-gradient(to right, #006c49, #6cf8bb);
+}
+
+.mentor-card__banner--tertiary {
+  background: linear-gradient(to right, #872d00, #ffb59a);
+}
+
+.mentor-card__banner--primary-soft {
+  background: linear-gradient(to right, #1e40af, #dde1ff);
+}
+
+.mentor-card__banner--teal {
+  background: linear-gradient(to right, #00714d, #6ffbbe);
+}
+
+.mentor-card__banner--amber {
+  background: linear-gradient(to right, #ffa583, #ffdbce);
+}
+
+.mentor-card__avatar {
+  position: absolute;
+  bottom: -40px;
+  left: 16px;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(11, 28, 48, 0.12);
+  background: #dce9ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mentor-card__avatar .user-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 8px;
+}
+
+.mentor-card__body {
+  padding: 48px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.mentor-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mentor-card__name {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  color: #0b1c30;
+}
+
+.mentor-card__title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: #00288e;
+}
+
+.mentor-card__badge {
+  background: #6cf8bb;
+  color: #00714d;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.mentor-card__bio {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #444653;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mentor-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: auto;
+}
+
+.mentor-card__tag {
+  padding: 4px 8px;
+  background: #dde1ff;
+  color: #00288e;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #c4c5d5;
+}
+
+.mentor-card__tag--muted {
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+  font-style: italic;
+}
+
+.mentor-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.mentor-card__btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.15s ease;
+  border: none;
+}
+
+.mentor-card__btn:active {
+  transform: scale(0.95);
+}
+
+.mentor-card__btn--outline {
+  color: #00288e;
+  background: transparent;
+  border: 1px solid #00288e;
+}
+
+.mentor-card__btn--outline:hover {
+  background: rgba(30, 64, 175, 0.1);
+}
+
+.mentor-card__btn--primary {
+  background: #006c49;
+  color: #ffffff;
+}
+
+.mentor-card__btn--primary:hover {
+  opacity: 0.9;
+}

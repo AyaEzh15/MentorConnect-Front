@@ -12,8 +12,8 @@ export const EVALUATION_CONFIG = {
     placeholder:
       "Ex : Conseils pertinents, tres a l'ecoute, explications claires...",
     buttonClass: "btn-primary",
-    badgeLabel: "Mentore → Mentor",
-    badgeClass: "bg-primary",
+    badgeLabel: "Mentoré → Mentor",
+    badgeClass: "mc-badge mc-badge--primary",
   },
   MENTOR: {
     type: "MENTOR_VERS_MENTORE",
@@ -22,9 +22,9 @@ export const EVALUATION_CONFIG = {
     criteria: ["Serieux", "Preparation", "Implication"],
     placeholder:
       "Ex : Bien prepare, participe activement, respecte les engagements...",
-    buttonClass: "btn-info",
-    badgeLabel: "Mentor → Mentore",
-    badgeClass: "bg-info text-dark",
+    buttonClass: "btn-success",
+    badgeLabel: "Mentor → Mentoré",
+    badgeClass: "mc-badge mc-badge--success",
   },
 };
 
@@ -49,5 +49,5 @@ export function getEvaluationTypeBadgeClass(type) {
   if (type === "MENTOR_VERS_MENTORE") {
     return EVALUATION_CONFIG.MENTOR.badgeClass;
   }
-  return "bg-secondary";
+  return "mc-badge mc-badge--muted";
 }

@@ -13,6 +13,14 @@ const UtilisateurService = {
     return api.put(`/utilisateurs/${id}`, utilisateur);
   },
 
+  uploadPhoto: (id, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post(`/utilisateurs/${id}/photo`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+
   desactiverUtilisateur: (id) => {
     return api.patch(`/utilisateurs/${id}`);
   },

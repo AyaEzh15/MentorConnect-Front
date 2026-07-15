@@ -150,7 +150,7 @@ function AdminUtilisateurs() {
   ];
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader title="Gestion des utilisateurs" />
 
       {message && <div className="alert alert-info">{message}</div>}

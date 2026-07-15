@@ -36,18 +36,19 @@ function CreateEvaluation() {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
+    <div className="mc-page mc-page--medium">
       <PageHeader title={evalConfig.title} subtitle={evalConfig.subtitle} />
 
       {message && <div className="alert alert-info">{message}</div>}
 
+      <div className="mc-section">
       <form onSubmit={envoyerEvaluation}>
         <div className="mb-3">
-          <span className="text-muted me-2">Criteres :</span>
+          <span className="text-muted me-2">Critères :</span>
           {evalConfig.criteria.map((critere) => (
             <span
               key={critere}
-              className="badge bg-light text-dark border me-1 mb-1"
+              className="mc-badge mc-badge--muted me-1 mb-1"
             >
               {critere}
             </span>
@@ -70,10 +71,11 @@ function CreateEvaluation() {
           required
         />
 
-        <button className={`btn w-100 ${evalConfig.buttonClass}`}>
-          Envoyer l'evaluation
+        <button className={`btn w-100 ${evalConfig.buttonClass}`} type="submit">
+          Envoyer l&apos;évaluation
         </button>
       </form>
+      </div>
     </div>
   );
 }

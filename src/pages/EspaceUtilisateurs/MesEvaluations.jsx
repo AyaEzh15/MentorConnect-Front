@@ -62,7 +62,7 @@ function MesEvaluations() {
   }
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader
         title="Mes evaluations"
         subtitle={

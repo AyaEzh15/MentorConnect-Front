@@ -1,6 +1,6 @@
-function DataTable({ columns, data, emptyMessage = "Aucune donnee trouvee.", rowKey = "id" }) {
+function DataTable({ columns, data, emptyMessage = "Aucune donnée trouvée.", rowKey = "id" }) {
   if (!data || data.length === 0) {
-    return <div className="alert alert-info">{emptyMessage}</div>;
+    return <div className="mc-empty">{emptyMessage}</div>;
   }
 
   const getKey = (row, index) =>
@@ -14,9 +14,9 @@ function DataTable({ columns, data, emptyMessage = "Aucune donnee trouvee.", row
   };
 
   return (
-    <div className="table-responsive">
-      <table className="table table-bordered table-hover align-middle">
-        <thead className="table-dark">
+    <div className="mc-table-wrap table-responsive">
+      <table className="table table-hover align-middle mb-0">
+        <thead>
           <tr>
             {columns.map((column, i) => (
               <th key={column.header ?? i}>{column.header}</th>

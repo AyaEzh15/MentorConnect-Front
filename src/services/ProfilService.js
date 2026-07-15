@@ -1,5 +1,13 @@
 import api from "../api/axiosConfig";
 
+function buildDomaineIdsQuery(domaineIds) {
+  if (!domaineIds || domaineIds.length === 0) return "";
+  return domaineIds
+    .filter((id) => id !== null && id !== undefined && id !== "")
+    .map((id) => `domaineIds=${encodeURIComponent(id)}`)
+    .join("&");
+}
+
 const ProfilService = {
   getProfils: () => api.get("/profils"),
 
@@ -8,11 +16,22 @@ const ProfilService = {
   getProfilByUtilisateur: (utilisateurId) =>
     api.get(`/profils/utilisateur/${utilisateurId}`),
 
-  createProfil: (utilisateurId, domaineId, profil) =>
-    api.post(`/profils?utilisateurId=${utilisateurId}&domaineId=${domaineId}`, profil),
+  createProfil: (utilisateurId, domaineIds, profil) => {
+    const idsQuery = buildDomaineIdsQuery(
+      Array.isArray(domaineIds) ? domaineIds : [domaineIds]
+    );
+    return api.post(
+      `/profils?utilisateurId=${utilisateurId}&${idsQuery}`,
+      profil
+    );
+  },
 
-  updateProfil: (id, domaineId, profil) =>
-    api.put(`/profils/${id}?domaineId=${domaineId}`, profil),
+  updateProfil: (id, domaineIds, profil) => {
+    const idsQuery = buildDomaineIdsQuery(
+      Array.isArray(domaineIds) ? domaineIds : [domaineIds]
+    );
+    return api.put(`/profils/${id}?${idsQuery}`, profil);
+  },
 
   deleteProfil: (id) => api.delete(`/profils/${id}`),
 

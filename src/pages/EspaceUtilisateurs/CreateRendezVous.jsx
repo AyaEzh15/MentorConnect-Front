@@ -39,11 +39,12 @@ function CreateRendezVous() {
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
+    <div className="mc-page mc-page--medium">
       <PageHeader title="Planifier un rendez-vous" />
 
       {message && <div className="alert alert-info">{message}</div>}
 
+      <div className="mc-section">
       <form onSubmit={createRdv}>
         <label className="form-label">Date et heure</label>
         <input
@@ -55,14 +56,19 @@ function CreateRendezVous() {
           required
         />
 
-        <label className="form-label">Lieu / lien réunion</label>
+        <label className="form-label">Lieu / lien réunion (optionnel)</label>
         <input
           name="lieuReunion"
-          className="form-control mb-3"
-          placeholder="Ex: Google Meet, Zoom, présentiel..."
+          className="form-control mb-1"
+          placeholder="Laisser vide pour générer un lien Jitsi automatiquement"
           value={form.lieuReunion}
           onChange={handleChange}
         />
+        <small className="text-muted d-block mb-3">
+          Si le champ est vide, un lien vidéo unique est créé pour la session
+          (Jitsi, sans compte hôte). L&apos;appel est rejoignable 10 minutes
+          avant l&apos;heure prévue.
+        </small>
 
         <label className="form-label">Durée (en minutes)</label>
         <input
@@ -84,10 +90,11 @@ function CreateRendezVous() {
           onChange={handleChange}
         />
 
-        <button className="btn btn-success w-100">
+        <button className="btn btn-primary w-100" type="submit">
           Créer le rendez-vous
         </button>
       </form>
+      </div>
     </div>
   );
 }

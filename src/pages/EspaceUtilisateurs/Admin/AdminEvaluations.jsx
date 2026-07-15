@@ -78,7 +78,7 @@ function AdminEvaluations() {
   }
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader
         title="Gestion des evaluations"
         subtitle="Toutes les evaluations de la plateforme."

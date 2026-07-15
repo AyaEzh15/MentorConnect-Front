@@ -1,12 +1,12 @@
 function PageHeader({ title, subtitle, actions }) {
   return (
-    <div className="d-flex justify-content-between align-items-start mb-4">
+    <div className="mc-page-header">
       <div>
-        <h2 className="mb-1">{title}</h2>
-        {subtitle && <p className="text-muted mb-0">{subtitle}</p>}
+        <h1 className="mc-page-header__title">{title}</h1>
+        {subtitle && <p className="mc-page-header__subtitle">{subtitle}</p>}
       </div>
 
-      {actions && <div className="d-flex gap-2">{actions}</div>}
+      {actions && <div className="mc-page-header__actions">{actions}</div>}
     </div>
   );
 }

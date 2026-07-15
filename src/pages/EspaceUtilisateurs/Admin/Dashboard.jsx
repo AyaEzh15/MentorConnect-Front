@@ -49,7 +49,7 @@ function Dashboard() {
 
   if (!user || user.role !== "ADMIN") {
     return (
-      <div className="container mt-5">
+      <div className="mc-page">
         <div className="alert alert-danger">
           Acces refuse. Cette page est reservee a l'administrateur.
         </div>
@@ -125,7 +125,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="container mt-5">
+    <div className="mc-page">
       <PageHeader
         title="Dashboard Administrateur"
         subtitle={`Bienvenue, ${user.prenom} ${user.nom}`}
