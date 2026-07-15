@@ -12,6 +12,7 @@ import Dashboard from "./pages/EspaceUtilisateurs/Admin/Dashboard";
 import AdminUtilisateurs from "./pages/EspaceUtilisateurs/Admin/AdminUtilisateurs";
 import AdminDomaines from "./pages/EspaceUtilisateurs/Admin/AdminDomaines";
 import AdminEvaluations from "./pages/EspaceUtilisateurs/Admin/AdminEvaluations";
+import AdminRapports from "./pages/EspaceUtilisateurs/Admin/AdminRapports";
 
 import MentoreHome from "./pages/EspaceUtilisateurs/Mentore/MentoreHome";
 import MentoreDemandes from "./pages/EspaceUtilisateurs/Mentore/MentoreDemandes";
@@ -26,6 +27,9 @@ import MesRendezVous from "./pages/EspaceUtilisateurs/MesRendezVous";
 import MesEvaluations from "./pages/EspaceUtilisateurs/MesEvaluations";
 import CreateEvaluation from "./pages/EspaceUtilisateurs/CreateEvaluation";
 import MonProfil from "./pages/EspaceUtilisateurs/MonProfil";
+import Calendrier from "./pages/EspaceUtilisateurs/Calendrier";
+import RelationSuivi from "./pages/EspaceUtilisateurs/RelationSuivi";
+import Signaler from "./pages/EspaceUtilisateurs/Signaler";
 
 function getCurrentUser() {
   const storedUser = localStorage.getItem("user");
@@ -140,6 +144,15 @@ function App() {
         />
 
         <Route
+          path="/admin/rapports"
+          element={
+            <AdminRoute>
+              <AdminRapports />
+            </AdminRoute>
+          }
+        />
+
+        <Route
           path="/mentor"
           element={
             <ProtectedRoute>
@@ -203,6 +216,24 @@ function App() {
         />
 
         <Route
+          path="/calendrier"
+          element={
+            <ProtectedRoute>
+              <Calendrier />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/relation/:relationId/suivi"
+          element={
+            <ProtectedRoute>
+              <RelationSuivi />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/rendez-vous/create/:relationId"
           element={
             <ProtectedRoute>
@@ -234,6 +265,15 @@ function App() {
           element={
             <ProtectedRoute>
               <MonProfil setUser={updateUser} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/signaler"
+          element={
+            <ProtectedRoute>
+              <Signaler />
             </ProtectedRoute>
           }
         />

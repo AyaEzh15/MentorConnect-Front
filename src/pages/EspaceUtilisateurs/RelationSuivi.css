@@ -1,0 +1,403 @@
+.relation-suivi {
+  text-align: left;
+}
+
+.suivi-tabs {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  background: #eff4ff;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+.suivi-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #444653;
+  cursor: pointer;
+}
+
+.suivi-tab--active {
+  background: #00288e;
+  color: #fff;
+}
+
+.suivi-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.suivi-form {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.suivi-form h3 {
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.objectif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.objectif-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #f8f9ff;
+}
+
+.objectif-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.objectif-card__type {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #00288e;
+  background: #dde1ff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.objectif-card h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.objectif-card__desc {
+  margin: 8px 0;
+  color: #444653;
+  font-size: 0.9rem;
+}
+
+.objectif-card__meta {
+  font-size: 0.85rem;
+  color: #757684;
+  margin-bottom: 8px;
+}
+
+.objectif-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.objectif-card__bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.objectif-card__bar > div {
+  height: 100%;
+  background: #006c49;
+}
+
+.objectif-card__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.objectif-card__controls input[type="range"] {
+  flex: 1;
+  min-width: 120px;
+}
+
+.plan-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-step {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.plan-step__ordre {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #dde1ff;
+  color: #00288e;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plan-step--TERMINEE {
+  border-color: #6cf8bb;
+  background: #f3fff9;
+}
+
+.plan-step--EN_COURS {
+  border-color: #a8b8ff;
+  background: #f8f9ff;
+}
+
+.plan-step__body h4 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.plan-step__body p {
+  margin: 0 0 10px;
+  color: #444653;
+  font-size: 0.9rem;
+}
+
+.suivi-hint {
+  color: #555;
+  font-size: 0.92rem;
+  margin-bottom: 16px;
+}
+
+.badge-statut {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #eef1f8;
+  color: #333;
+}
+
+.badge-statut--PROPOSE,
+.badge-statut--A_VENIR,
+.badge-statut--A_FAIRE {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-statut--VALIDE,
+.badge-statut--EN_COURS {
+  background: #dde1ff;
+  color: #00288e;
+}
+
+.badge-statut--ATTEINT,
+.badge-statut--TERMINEE,
+.badge-statut--SOUMISE {
+  background: #d1f5e4;
+  color: #0a6b45;
+}
+
+.badge-statut--ABANDONNE,
+.badge-statut--ANNULEE,
+.badge-statut--EN_RETARD,
+.badge-statut--BLOQUEE,
+.badge-statut--A_CORRIGER {
+  background: #fde2e1;
+  color: #9b1c1c;
+}
+
+.objectif-card__comment {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  color: #444653;
+  background: #f0f2f8;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.objectif-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tache-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tache-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.tache-soumission {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tache-statut-row {
+  margin-top: 12px;
+}
+
+.tache-livrable {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.tache-livrable strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #00288e;
+}
+
+.tache-livrable p {
+  margin: 0 0 8px;
+  color: #444653;
+}
+
+.tache-livrable__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tache-livrable__links a {
+  font-weight: 600;
+  color: #00288e;
+}
+
+.btn-suivi {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-suivi--primary {
+  background: #00288e;
+  color: #fff;
+}
+
+.btn-suivi--primary:hover {
+  background: #001f6e;
+}
+
+.btn-suivi--success {
+  background: #006c49;
+  color: #fff;
+}
+
+.btn-suivi--success:hover {
+  background: #005539;
+}
+
+.btn-suivi--outline {
+  background: #fff;
+  color: #00288e;
+  border: 1.5px solid #00288e;
+}
+
+.btn-suivi--outline:hover {
+  background: #eff4ff;
+}
+
+.btn-suivi--ghost {
+  background: #eff4ff;
+  color: #444653;
+}
+
+.btn-suivi--ghost:hover {
+  background: #dde1ff;
+}
+
+.suivi-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 52, 0.45);
+}
+
+.suivi-modal {
+  width: min(440px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 18px 48px rgba(0, 40, 142, 0.18);
+  padding: 22px 24px;
+  text-align: left;
+}
+
+.suivi-modal h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  color: #00288e;
+  font-weight: 700;
+}
+
+.suivi-modal__hint {
+  margin: 0 0 14px;
+  color: #757684;
+  font-size: 0.9rem;
+}
+
+.suivi-modal__input {
+  border-radius: 10px !important;
+  border-color: #d8dee9 !important;
+  resize: vertical;
+  min-height: 96px;
+}
+
+.suivi-modal__input:focus {
+  border-color: #00288e !important;
+  box-shadow: 0 0 0 3px rgba(0, 40, 142, 0.15) !important;
+}
+
+.suivi-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.plan-step--A_VENIR {
+  border-color: #e2e8f0;
+}
+
+.plan-step--BLOQUEE,
+.plan-step--ANNULEE {
+  opacity: 0.85;
+  border-color: #f5c2c0;
+}

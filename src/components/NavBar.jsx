@@ -185,6 +185,13 @@ function Navbar({ user, logout }) {
                 >
                   Evaluations
                 </NavLink>
+                <NavLink
+                  className={activeClass}
+                  to="/admin/rapports"
+                  onClick={closeMenu}
+                >
+                  Rapports
+                </NavLink>
               </>
             )}
 
@@ -196,8 +203,14 @@ function Navbar({ user, logout }) {
                 <NavLink className={activeClass} to="/rendez-vous" onClick={closeMenu}>
                   Rendez-vous
                 </NavLink>
+                <NavLink className={activeClass} to="/calendrier" onClick={closeMenu}>
+                  Calendrier
+                </NavLink>
                 <NavLink className={activeClass} to="/evaluations" onClick={closeMenu}>
                   Mes evaluations
+                </NavLink>
+                <NavLink className={activeClass} to="/signaler" onClick={closeMenu}>
+                  Signaler
                 </NavLink>
               </>
             )}
@@ -224,8 +237,14 @@ function Navbar({ user, logout }) {
                 <NavLink className={activeClass} to="/rendez-vous" onClick={closeMenu}>
                   Rendez-vous
                 </NavLink>
+                <NavLink className={activeClass} to="/calendrier" onClick={closeMenu}>
+                  Calendrier
+                </NavLink>
                 <NavLink className={activeClass} to="/evaluations" onClick={closeMenu}>
                   Mes evaluations
+                </NavLink>
+                <NavLink className={activeClass} to="/signaler" onClick={closeMenu}>
+                  Signaler
                 </NavLink>
               </>
             )}

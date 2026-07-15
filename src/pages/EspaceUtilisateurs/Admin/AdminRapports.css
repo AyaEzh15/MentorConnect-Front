@@ -1,0 +1,256 @@
+.admin-rapports {
+  text-align: left;
+}
+
+.rapports-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+  .rapports-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rapports-summary__card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 40, 142, 0.05);
+}
+
+.rapports-summary__card p {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #757684;
+}
+
+.rapports-summary__card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.6rem;
+  color: #0b1c30;
+}
+
+.rapports-summary__card--alert strong {
+  color: #ba1a1a;
+}
+
+.btn-rapports-export {
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  background: #00288e;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.btn-rapports-export:hover {
+  background: #001f6e;
+}
+
+.rapports-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0, 40, 142, 0.05);
+}
+
+.rapports-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.rapports-panel__head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #0b1c30;
+}
+
+.rapports-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rapports-chip {
+  border: 1px solid #d8dee9;
+  background: #fff;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #444653;
+}
+
+.rapports-chip--active {
+  background: #00288e;
+  border-color: #00288e;
+  color: #fff;
+}
+
+.rapports-table-wrap {
+  overflow-x: auto;
+}
+
+.rapports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.rapports-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #eff4ff;
+  color: #757684;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rapports-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eef1f6;
+  vertical-align: top;
+}
+
+.rapports-title {
+  font-weight: 700;
+  color: #0b1c30;
+}
+
+.rapports-desc {
+  margin-top: 4px;
+  color: #757684;
+  font-size: 0.8rem;
+  max-width: 260px;
+}
+
+.rapports-type {
+  color: #ba1a1a;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.rapports-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.rapports-status--OUVERT {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.rapports-status--EN_COURS {
+  background: #dde1ff;
+  color: #00288e;
+}
+
+.rapports-status--RESOLU {
+  background: #d1f5e4;
+  color: #0a6b45;
+}
+
+.rapports-status--REJETE {
+  background: #ffdad6;
+  color: #93000a;
+}
+
+.rapports-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn-rapports {
+  border: 1px solid #d8dee9;
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #444653;
+}
+
+.btn-rapports--primary {
+  background: #00288e;
+  border-color: #00288e;
+  color: #fff;
+}
+
+.btn-rapports--ok {
+  background: #006c49;
+  border-color: #006c49;
+  color: #fff;
+}
+
+.btn-rapports--warn {
+  background: #fff;
+  border-color: #872d00;
+  color: #872d00;
+}
+
+.btn-rapports--danger {
+  background: #fff;
+  border-color: #ba1a1a;
+  color: #ba1a1a;
+}
+
+.rapports-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 52, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.rapports-modal {
+  width: min(440px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 22px;
+  box-shadow: 0 18px 48px rgba(0, 40, 142, 0.18);
+}
+
+.rapports-modal h3 {
+  margin: 0 0 8px;
+  color: #00288e;
+}
+
+.rapports-modal__hint {
+  color: #757684;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.rapports-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}

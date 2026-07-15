@@ -414,15 +414,25 @@ function MentoreHome() {
                         <p className="dash-card__meta">Mentor</p>
                       </div>
                     </div>
-                    <Link
-                      className="connection-item__chat"
-                      to={`/conversation/${relation.id}`}
-                      aria-label="Ouvrir la discussion"
-                    >
-                      <span className="material-symbols-outlined">
-                        chat_bubble
-                      </span>
-                    </Link>
+                    <div className="d-flex gap-1">
+                      <Link
+                        className="connection-item__chat"
+                        to={`/relation/${relation.id}/suivi`}
+                        aria-label="Objectifs et plan"
+                        title="Objectifs & plan"
+                      >
+                        <span className="material-symbols-outlined">flag</span>
+                      </Link>
+                      <Link
+                        className="connection-item__chat"
+                        to={`/conversation/${relation.id}`}
+                        aria-label="Ouvrir la discussion"
+                      >
+                        <span className="material-symbols-outlined">
+                          chat_bubble
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                 ))}
 
@@ -433,7 +443,14 @@ function MentoreHome() {
                 )}
               </div>
 
-              <Link className="dash-card__btn" to="/mentore/cherche">
+              <Link className="dash-card__btn" to="/calendrier">
+                Voir le calendrier
+              </Link>
+              <Link
+                className="dash-card__link"
+                to="/mentore/cherche"
+                style={{ marginTop: 8 }}
+              >
                 Découvrir de nouveaux mentors
               </Link>
             </div>

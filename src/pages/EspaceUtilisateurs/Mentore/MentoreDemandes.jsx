@@ -52,26 +52,34 @@ function MentoreDemandes() {
     },
     { header: "Statut", render: (r) => <StatusBadge statut={r.statut} /> },
     {
-      header: "Discussion",
+      header: "Actions",
       render: (r) =>
         isAcceptee(r.statut) ? (
-          <Link className="btn btn-primary btn-sm" to={`/conversation/${r.id}`}>
-            Discussion
-          </Link>
+          <div className="d-flex flex-wrap gap-2">
+            <Link className="btn btn-primary btn-sm" to={`/conversation/${r.id}`}>
+              Discussion
+            </Link>
+            <Link
+              className="btn btn-success btn-sm"
+              to={`/relation/${r.id}/suivi`}
+            >
+              Objectifs & plan
+            </Link>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => setConfirmRelation(r)}
+            >
+              Supprimer
+            </button>
+          </div>
         ) : (
-          "-"
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() => setConfirmRelation(r)}
+          >
+            Supprimer
+          </button>
         ),
-    },
-    {
-      header: "Actions",
-      render: (r) => (
-        <button
-          className="btn btn-danger btn-sm"
-          onClick={() => setConfirmRelation(r)}
-        >
-          Supprimer
-        </button>
-      ),
     },
   ];
 

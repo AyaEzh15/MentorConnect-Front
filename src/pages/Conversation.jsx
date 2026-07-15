@@ -217,12 +217,20 @@ function Conversation() {
               Retour
             </Link>
             {relation && (
-              <Link
-                to={`/rendez-vous/create/${relation.id}`}
-                className="btn btn-outline-primary"
-              >
-                Planifier un RDV
-              </Link>
+              <>
+                <Link
+                  to={`/relation/${relation.id}/suivi`}
+                  className="btn btn-outline-success"
+                >
+                  Objectifs & plan
+                </Link>
+                <Link
+                  to={`/rendez-vous/create/${relation.id}`}
+                  className="btn btn-outline-primary"
+                >
+                  Planifier un RDV
+                </Link>
+              </>
             )}
           </>
         }
@@ -243,7 +251,7 @@ function Conversation() {
               }
 
               const { message: msg, date } = item;
-              const isMe = getExpediteurId(msg) === user.id;
+              const isMe = Number(getExpediteurId(msg)) === Number(user?.id);
 
               return (
                 <div

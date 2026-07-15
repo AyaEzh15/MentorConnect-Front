@@ -557,8 +557,8 @@ a:hover {
 
 .mc-chat__bubble {
   max-width: 75%;
-  padding: 8px 10px 6px 12px;
-  border-radius: 14px;
+  padding: 10px 12px 8px 14px;
+  border-radius: 18px;
   font-size: 14px;
   line-height: 1.45;
   display: inline-flex;
@@ -583,17 +583,17 @@ a:hover {
 }
 
 .mc-chat__bubble--mine {
-  background: var(--mc-primary);
-  color: #fff;
+  background: #c8dcff;
+  color: #0b1c30;
   border-bottom-right-radius: 4px;
 }
 
 .mc-chat__bubble--mine .mc-chat__time {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(11, 28, 48, 0.55);
 }
 
 .mc-chat__bubble--theirs {
-  background: var(--mc-surface-low);
+  background: #f0f2f5;
   color: var(--mc-on-surface);
   border-bottom-left-radius: 4px;
 }
